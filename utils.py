@@ -121,7 +121,7 @@ async def refresh_status_cache(lang="ru"):
         cache_key = f"status_{lang}"
         
         services = {
-            "Atlas": "https://atlas.collapseloader.org"
+            "CDN/API": "https://huggingface.co/datasets/Collapsecdn/collapsecdn"
         }
 
         async def check_service(name, url, client):
@@ -213,9 +213,9 @@ async def refresh_clients_cache(lang="ru"):
         cache_key = f"clients_{lang}"
         try:
             urls = {
-                "Vanilla / Custom": "https://atlas.collapseloader.org/api/v1/clients",
-                "Fabric": "https://atlas.collapseloader.org/api/v1/fabric-clients",
-                "Forge": "https://atlas.collapseloader.org/api/v1/forge-clients"
+                "Vanilla / Custom": "https://huggingface.co/datasets/Collapsecdn/collapsecdn/raw/main/static/clients.json",
+                "Fabric": "https://huggingface.co/datasets/Collapsecdn/collapsecdn/raw/main/static/fabric-clients.json",
+                "Forge": "https://huggingface.co/datasets/Collapsecdn/collapsecdn/raw/main/static/forge-clients.json"
             }
             client = await get_client()
             
@@ -225,10 +225,18 @@ async def refresh_clients_cache(lang="ru"):
                 resp = await client.get(url)
                 if resp.status_code == 200:
                     data = resp.json()
-                    clients_list = data.get("data", [])
+                    if isinstance(data, list):
+                        clients_list = data
+                    elif isinstance(data, dict):
+                        clients_list = data.get("data", [])
+                    else:
+                        clients_list = []
+                        
                     if clients_list:
                         lines.append(f"\n<b>{category}</b>:")
                         for c in clients_list:
+                            if not c.get("show", True):
+                                continue
                             name = c.get("name", "Unknown")
                             version = c.get("version", "N/A")
                             client_id = c.get("id", "N/A")

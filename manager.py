@@ -160,80 +160,56 @@ def start_bot():
 
 def draw_interface(bot_process):
     is_running = bot_process.poll() is None
-    status_color = "#00FF7F" if is_running else "#FF3366" 
-    status_text = "● ONLINE & LISTENING" if is_running else "○ OFFLINE"
+    status_color = "#00FF66" if is_running else "#FF3B30" 
+    status_text = "● ONLINE" if is_running else "○ OFFLINE"
 
-    logo_raw = [
-        " ██████╗  ██████╗  ██╗      ██╗        █████╗   ██████╗   ███████╗  ███████╗ ",
-        "██╔════╝ ██╔═══██╗ ██║      ██║       ██╔══██╗  ██╔══██╗  ██╔════╝  ██╔════╝ ",
-        "██║      ██║   ██║ ██║      ██║       ███████║  ██████╔╝  ███████╗  █████╗   ",
-        "██║      ██║   ██║ ██║      ██║       ██╔══██║  ██╔═══╝   ╚════██║  ██╔══╝   ",
-        "╚██████╗ ╚██████╔╝ ███████╗ ███████╗  ██║  ██║  ██║       ███████║  ███████╗ ",
-        " ╚═════╝  ╚═════╝  ╚══════╝ ╚══════╝  ╚═╝  ╚═╝  ╚═╝       ╚══════╝  ╚══════╝ "
-    ]
-    logo = "\n".join(logo_raw)
-    header_text = Align.center(Text(logo, style="bold #00D4FF"))
+    # Elegant minimalist header
+    header = Text("\n✦ COLLAPSE CONTROL PANEL ✦\n", style="bold #00E5FF", justify="center")
     
+    # Sleek status table with simple lines
     status_table = Table(
-        box=box.ROUNDED, 
+        box=box.SIMPLE, 
         show_header=False, 
         expand=True, 
-        border_style="#0077B6",
-        padding=(0, 2)
+        border_style="#333333",
+        padding=(0, 1)
     )
-    status_table.add_column("Key", style="bold #90E0EF", justify="right", width=25)
-    status_table.add_column("Value", style="bold white", justify="left")
+    status_table.add_column("Key", style="dim #A0A0A0", justify="right", width=20)
+    status_table.add_column("Value", style="white", justify="left")
     
-    status_table.add_row("Bot Status :", f"[{status_color}]{status_text}[/]")
-    status_table.add_row("WebApp Tunnel :", f"[bold #00FF7F]{escape(_tunnel_url)}[/]")
-    status_table.add_row("Python Version :", f"[dim #CAF0F8]{escape(sys.version.split()[0])}[/]")
-    status_table.add_row("Working Directory :", f"[dim #CAF0F8]{escape(os.path.basename(os.getcwd()))}[/]")
+    status_table.add_row("Bot Status", f"[{status_color}]{status_text}[/]")
+    status_table.add_row("WebApp Tunnel", f"[bold #00FF66]{escape(_tunnel_url)}[/]")
+    status_table.add_row("Python", f"[dim #808080]{escape(sys.version.split()[0])}[/]")
+    status_table.add_row("Directory", f"[dim #808080]{escape(os.path.basename(os.getcwd()))}[/]")
 
-    controls = Table(box=box.MINIMAL, expand=True, show_header=False, border_style="#00B4D8")
-    controls.add_column("Col1", justify="left")
-    controls.add_column("Col2", justify="left")
-    controls.add_column("Col3", justify="left")
+    # Minimalist control layout
+    controls = Table(box=box.SIMPLE, expand=True, show_header=False, border_style="#333333", padding=(0, 2))
+    controls.add_column("Col1", justify="center")
+    controls.add_column("Col2", justify="center")
     
     controls.add_row(
-        "[bold #00FF7F][ 1 ] START BOT[/]",
-        "[bold #9370DB][ 4 ] LIVE LOGS[/]",
-        ""
+        "[bold #00FF66]1[/] Start Bot",
+        "[bold #9F7AEA]4[/] Live Logs"
     )
     controls.add_row(
-        "[bold #FF3366][ 2 ] STOP BOT[/]",
-        "[bold #FFA500][ 5 ] STATISTICS[/]",
-        ""
+        "[bold #FF3B30]2[/] Stop Bot",
+        "[bold #FFA500]5[/] Statistics"
     )
     controls.add_row(
-        "[bold #FFD700][ 3 ] RESTART BOT[/]",
-        "[bold #FF00FF][ 6 ] EXIT[/]",
-        ""
+        "[bold #FFCC00]3[/] Restart",
+        "[bold #E2E8F0]6[/] Exit"
     )
 
-    layout = Table.grid(expand=True)
-    layout.add_row(Align.center(header_text))
-    
-    glass_status = Panel(
-        status_table, 
-        border_style="#0096C7", 
-        title="[bold #CAF0F8] SYSTEM MONITOR [/]",
-        subtitle="[dim #0096C7] ── Collapse Architecture ── [/]",
-        padding=(0, 4)
-    )
-    layout.add_row(glass_status)
-    
-    glass_controls = Panel(
-        Align.center(controls), 
-        border_style="#00B4D8", 
-        title="[bold #90E0EF] ACTION CENTER [/]",
-        padding=(0, 0)
-    )
-    layout.add_row(glass_controls)
+    # Combining into a single minimalist panel grid
+    grid = Table.grid(expand=True)
+    grid.add_row(header)
+    grid.add_row(Panel(status_table, border_style="#444444", title="[bold #A0A0A0] Status [/]", title_align="left"))
+    grid.add_row(Panel(controls, border_style="#444444", title="[bold #A0A0A0] Controls [/]", title_align="left"))
 
     return Panel(
-        layout, 
-        border_style="bold #00D4FF", 
-        box=box.DOUBLE_EDGE,
+        grid, 
+        border_style="#00E5FF", 
+        box=box.ROUNDED,
         padding=(0, 2)
     )
 
@@ -260,7 +236,7 @@ def main_manager():
             
             clear_screen()
             console.print(draw_interface(bot_process))
-            console.print("  [bold #00D4FF]❯❯ Select Operation (1-6):[/] ", end="")
+            console.print("  [bold #00E5FF]❯ Select Operation (1-6):[/] ", end="")
             sys.stdout.flush()
             
             choice = None

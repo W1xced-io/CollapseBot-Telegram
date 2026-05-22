@@ -340,7 +340,7 @@ async def server_monitor_task():
     while True:
         try:
             client = await get_client()
-            url = "https://atlas.collapseloader.org"
+            url = "https://huggingface.co/datasets/Collapsecdn/collapsecdn"
             
             try:
                 resp = await client.get(url, timeout=10.0)
@@ -353,13 +353,13 @@ async def server_monitor_task():
             if current_status == "offline" and last_status == "online":
                 offline_start_time = time.time()
                 last_status = "offline"
-                logger.warning("Atlas Server went offline! Notifying subscribers.")
+                logger.warning("CDN/API Server went offline! Notifying subscribers.")
                 subs = get_subscribers()
                 for user_id in subs:
                     try:
                         await bot.send_message(
                             chat_id=user_id,
-                            text="<b>CRITICAL: Сервер Atlas временно недоступен!</b>\n\nСлужба не отвечает на запросы, возможны перебои в работе лоадера.",
+                            text="<b>CRITICAL: Сервер CDN/API временно недоступен!</b>\n\nСлужба не отвечает на запросы, возможны перебои в работе лоадера.",
                             parse_mode="HTML"
                         )
                     except Exception as e:
@@ -368,13 +368,13 @@ async def server_monitor_task():
             elif current_status == "online" and last_status == "offline":
                 downtime = int((time.time() - offline_start_time) / 60)
                 last_status = "online"
-                logger.info("Atlas Server is back online! Notifying subscribers.")
+                logger.info("CDN/API Server is back online! Notifying subscribers.")
                 subs = get_subscribers()
                 for user_id in subs:
                     try:
                         await bot.send_message(
                             chat_id=user_id,
-                            text=f"<b>Сервер восстановлен!</b>\n\nСистемы Atlas снова работают стабильно. Примерное время простоя: {downtime} мин.",
+                            text=f"<b>Сервер восстановлен!</b>\n\nСистемы CDN/API снова работают стабильно. Примерное время простоя: {downtime} мин.",
                             parse_mode="HTML"
                         )
                     except Exception as e:
